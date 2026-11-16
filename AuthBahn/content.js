@@ -1,35 +1,41 @@
-chrome.storage.local.get(["username", "password"], function(data) {
-  if (data && data.username && data.password) {
-    // Listen for changes in the URL
-    const checkUrl = setInterval(function() {
-      // Check if the URL contains the expected part of the URL
+/**
+ * CRISPR AuthBahn - Captive Portal Auto-Login Content Script
+ * Auto-fills and submits the FortiGate captive portal login form
+ * (192.168.55.253) when saved credentials exist.
+ */
+
+(function () {
+  chrome.storage.local.get(["username", "password"], function (data) {
+    if (!data || !data.username || !data.password) return;
+
+    // Only act when the actual login form is present on this page.
+    const userField = document.getElementById("ft_un");
+    const passField = document.getElementById("ft_pd");
+    const form = userField && userField.closest("form");
+    if (!userField || !passField || !form) return;
+
+    // Fill the login form
+    userField.value = data.username;
+    passField.value = data.password;
+
+    // Track the post-login keepalive URL for the popup's logout action
+    const checkUrl = setInterval(function () {
       if (window.location.href.includes("192.168.55.253:1003/keepalive")) {
-        // Stop checking the URL
         clearInterval(checkUrl);
-
         const currentUrl = window.location.href;
-        // Save the current URL to local storage
-        chrome.storage.local.set({ "submittedUrl": currentUrl });
-        //show the saved url in the log
+        chrome.storage.local.set({ submittedUrl: currentUrl });
         console.log("The submitted URL is: " + currentUrl);
-    // Display popup message
-        //window.alert("Thanks for signing in using our CRISPR.");
-        setTimeout(function() {
-          // Redirect to the server URL
-          window.location.href = "http://192.168.77.84";
-        }, 1000); // Adjust the delay time as needed
-
-
+        setTimeout(function () {
+          window.location.href = "https://crispr.iiitn.ac.in/";
+        }, 1000);
       }
-    }, 100); // Check the URL every 100 milliseconds
-    // Fill the form with saved username and password
-    document.getElementById("ft_un").value = data.username;
-    document.getElementById("ft_pd").value = data.password;
-    // Get the current URL before submitting the form
-    // Submit the form programmatically
-    document.querySelector("form").submit();
+    }, 100);
 
-
-
-  }
-});
+    // Submit the login form programmatically
+    try {
+      form.submit();
+    } catch (e) {
+      console.warn("AuthBahn: could not submit portal form:", e);
+    }
+  });
+})();

@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# route-traffic / route-tunnel - Toggle full system traffic through the SSH tunnel via GNOME SOCKS5 proxy
+
+SOCKS_PORT=1088
+SERVER="${SMART_TUNNEL_SERVER:-crisper@192.168.77.84}"
+
+cmd="${1:-status}"
+
+case "$cmd" in
+  on)
+    echo "Starting background SSH SOCKS5 tunnel on 127.0.0.1:$SOCKS_PORT..."
+    if ! ss -tulpn | grep -q ":$SOCKS_PORT "; then
+      ssh -fN -D "$SOCKS_PORT" -o ExitOnForwardFailure=yes "$SERVER"
+      sleep 1
+    fi
+
+    echo "Enabling system-wide GNOME proxy..."
+    gsettings set org.gnome.system.proxy mode 'manual'
+    gsettings set org.gnome.system.proxy.socks host '127.0.0.1'
+    gsettings set org.gnome.system.proxy.socks port "$SOCKS_PORT"
+    gsettings set org.gnome.system.proxy ignore-hosts "['localhost', '127.0.0.0/8', '::1', '*.iiitn.ac.in', '192.168.0.0/16', '10.0.0.0/8', '172.16.0.0/12']"
+
+    echo "[OK] System-wide traffic is now routed through $SERVER."
+    echo "Public IP is now: $(all_proxy="socks5h://127.0.0.1:$SOCKS_PORT" curl -s -m 5 https://icanhazip.com || echo 'unknown')"
+    ;;
+  off)
+    echo "Disabling system-wide GNOME proxy..."
+    gsettings set org.gnome.system.proxy mode 'none'
+    if ss -tulpn | grep -q ":$SOCKS_PORT "; then
+      echo "Stopping SSH SOCKS5 tunnel on port $SOCKS_PORT..."
+      pkill -f "ssh.*-D.*$SOCKS_PORT" 2>/dev/null || fuser -k -n tcp "$SOCKS_PORT" 2>/dev/null
+    fi
+    echo "[OK] System-wide proxy disabled. Traffic is direct."
+    echo "Public IP is now: $(curl -s -m 5 https://icanhazip.com || echo 'unknown')"
+    ;;
+  status)
+    mode=$(gsettings get org.gnome.system.proxy mode)
+    echo "=== System Proxy Status ==="
+    echo "GNOME Proxy Mode: $mode"
+    if [ "$mode" = "'manual'" ]; then
+      echo "SOCKS Host: $(gsettings get org.gnome.system.proxy.socks host):$(gsettings get org.gnome.system.proxy.socks port)"
+      echo "Ignore Hosts: $(gsettings get org.gnome.system.proxy ignore-hosts)"
+    fi
+    if ss -tulpn | grep -q ":$SOCKS_PORT "; then
+      echo "SSH SOCKS5 Tunnel: ACTIVE on 127.0.0.1:$SOCKS_PORT"
+    else
+      echo "SSH SOCKS5 Tunnel: INACTIVE"
+    fi
+    ;;
+  *)
+    echo "Usage: $(basename "$0") {on|off|status}"
+    exit 1
+    ;;
+esac

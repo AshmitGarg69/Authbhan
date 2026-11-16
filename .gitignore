@@ -1,0 +1,55 @@
+# Old version reference folder (do not push to git)
+old version do not make changes to it/
+
+# Agent conversation logs and internal orchestration files
+.agents/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# macOS / OS metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+__MACOSX/
+
+# Local runtime state, logs, and PID files
+*.log
+*.pid
+proxy.log
+ssh.log
+blocked.json
+blocked.json.lock
+config.env
+.env
+.env.local
+
+# Private keys and certificates
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Build artifacts & packages
+dist/
+build/
+*.zip
+*.crx
+*.xpi
+
+# Local editor and IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

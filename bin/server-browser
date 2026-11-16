@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# server-browser - Control and open the web-based remote browser running on crisper@192.168.77.84
+
+SERVER="${SMART_TUNNEL_SERVER:-crisper@192.168.77.84}"
+PORT="${SMART_BROWSER_PORT:-5800}"
+URL="http://${SMART_BROWSER_HOST:-192.168.77.84}:${PORT}"
+
+cmd="${1:-open}"
+
+case "$cmd" in
+  start)
+    echo "Starting remote browser container on server..."
+    ssh "$SERVER" "docker start crispr-remote-browser 2>/dev/null || docker run -d --name crispr-remote-browser --restart unless-stopped -p 5800:5800 -v ~/remote-firefox-config:/config:rw jlesage/firefox"
+    echo "[OK] Remote browser running at $URL"
+    ;;
+  stop)
+    echo "Stopping remote browser container on server..."
+    ssh "$SERVER" "docker stop crispr-remote-browser"
+    echo "[OK] Remote browser stopped."
+    ;;
+  restart)
+    echo "Restarting remote browser container on server..."
+    ssh "$SERVER" "docker restart crispr-remote-browser"
+    echo "[OK] Remote browser restarted at $URL"
+    ;;
+  status)
+    echo "=== Remote Browser Status ==="
+    ssh "$SERVER" "docker ps --filter name=crispr-remote-browser --format 'Status: {{.Status}} | Image: {{.Image}} | Ports: {{.Ports}}'"
+    echo "Access URL: $URL"
+    ;;
+  open)
+    echo "Opening remote browser at $URL in your default browser..."
+    if command -v xdg-open >/dev/null 2>&1; then
+      xdg-open "$URL" >/dev/null 2>&1 &
+    else
+      echo "Please open $URL in Chrome, Brave, or Firefox."
+    fi
+    ;;
+  *)
+    echo "Usage: server-browser {start|stop|restart|status|open}"
+    exit 1
+    ;;
+esac

@@ -1,0 +1,22 @@
+[Unit]
+Description=CRISPR Smart Tunnel shared blocked-domain list service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=nobody
+Group=nogroup
+ExecStart=/usr/bin/python3 /opt/smart-tunnel/smart-list-service.py
+Environment=SMART_LIST_STATE=/var/lib/smart-tunnel/shared_list.json
+Environment=SMART_LIST_PORT=8081
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/var/lib/smart-tunnel
+
+[Install]
+WantedBy=multi-user.target
