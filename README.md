@@ -65,17 +65,35 @@ AuthBahn provides two flexible usage modes:
 
 ## Quick Installation
 
-### Option A: Direct Download (No Git Needed)
+### Option A: Direct Download (Recommended for All Students)
 1. Download the latest **`AuthBahn-v1.0.zip`** from the [Releases](../../releases) tab.
 2. Unzip the downloaded file to a folder on your computer.
 3. Open your browser's extension console:
-   - **Chrome / Brave / Arc**: `chrome://extensions`
+   - **Chrome / Brave / Arc**: `chrome://extensions` (or `brave://extensions`)
    - **Microsoft Edge**: `edge://extensions`
 4. Turn on **Developer mode** (toggle in top-right corner).
-5. Click **Load unpacked** (top-left) and select the unzipped folder.
+5. Click **Load unpacked** (top-left) and select the unzipped `AuthBahn` folder.
 6. Pin AuthBahn to your toolbar.
 
-### Option B: From Git
+---
+
+### macOS / MacBook Guide
+
+AuthBahn is **100% compatible with macOS** (Sonoma, Ventura, Monterey, etc.):
+- **Supported Browsers**: Brave, Google Chrome, Arc, Microsoft Edge, and Firefox.
+- *(Note: Apple Safari does not support raw unpacked extensions without Xcode packaging; please use Brave, Chrome, Arc, or Firefox on your Mac).*
+
+**Steps on Mac:**
+1. Download **`AuthBahn-v1.0.zip`** from [Releases](../../releases).
+2. Open your **Downloads** folder in Finder and double-click `AuthBahn-v1.0.zip` to extract the `AuthBahn` folder.
+3. Open **Brave**, **Chrome**, or **Arc** and go to `brave://extensions` (or `chrome://extensions`).
+4. Toggle **Developer mode** (top-right switch) to **ON**.
+5. Click **Load unpacked** (top-left) and select the extracted **`AuthBahn`** folder.
+6. Click the AuthBahn icon in the menu bar, and toggle **Smart Tunnel** to **ON** to browse unrestricted.
+
+---
+
+### Option B: From Git (Developers)
 ```bash
 git clone -b smart-tunnel https://github.com/AshmitGarg69/Authbhan.git
 ```
@@ -102,7 +120,7 @@ Then load the `AuthBahn` directory in `chrome://extensions` via **Load unpacked*
 
 ## CLI & Server Deployment (Optional)
 
-For server administrators or members wishing to run their own local escape hatch:
+For server administrators or power users wishing to run their own local escape hatch (supported on Linux & macOS):
 
 ```bash
 # Start local CLI daemon
