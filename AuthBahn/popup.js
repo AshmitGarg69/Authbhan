@@ -89,25 +89,15 @@ function initToggleSwitch() {
     updateStatus(mode);
   });
 
-  toggle.addEventListener("change", async () => {
+  toggle.addEventListener("change", () => {
     if (toggle.checked) {
-      let chosenMode = "zero";
-      try {
-        const c = new AbortController();
-        const tid = setTimeout(() => c.abort(), 300);
-        const r = await fetch(`${SMART_PROXY_API}/_smart/status`, { signal: c.signal });
-        clearTimeout(tid);
-        if (r.ok) chosenMode = "smart";
-      } catch (e) {
-        chosenMode = "zero";
-      }
-
+      const chosenMode = "zero";
       const apply = () => {
         chrome.runtime.sendMessage({ action: "setProxyMode", mode: chosenMode }, (resp) => {
           if (resp && resp.success) {
             updateStatus(chosenMode);
             setActiveModeButton(chosenMode);
-            showMessage(`Smart Tunnel: ON (${chosenMode === "smart" ? "Daemon" : "Zero-Setup"})`);
+            showMessage("Smart Tunnel: ON (Zero-Setup)");
           } else {
             toggle.checked = false;
             updateStatus("direct");
@@ -115,12 +105,7 @@ function initToggleSwitch() {
           }
         });
       };
-
-      if (chosenMode === "zero") {
-        refreshSharedList(false, apply);
-      } else {
-        apply();
-      }
+      refreshSharedList(false, apply);
     } else {
       chrome.runtime.sendMessage({ action: "setProxyMode", mode: "direct" }, (resp) => {
         if (resp && resp.success) {
@@ -142,7 +127,7 @@ function initModeSwitcher() {
   const modeMap = { modeSmart: "smart", modeZero: "zero", modeFull: "full", modeDirect: "direct" };
 
   chrome.storage.local.get(["proxyMode"], (data) => {
-    const currentMode = data.proxyMode || "smart";
+    const currentMode = data.proxyMode || "direct";
     setActiveModeButton(currentMode);
   });
 
