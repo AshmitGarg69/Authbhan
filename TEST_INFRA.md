@@ -34,30 +34,30 @@ The **Hybrid Smart Tunnel E2E Testing Infrastructure** provides a completely opa
 
 ```mermaid
 graph TD
-    subgraph TestEnvironment [Isolated TestEnvironment (Context Manager)]
-        TempDir[Ephemeral Directory /tmp/...]
-        IsolatedConfig[Isolated config.env & blocked.json]
-        PortAllocator[FreePortManager: Dynamic bind(0)]
-        ProcCleanup[Automatic SIGTERM / SIGKILL Process Reaper]
+    subgraph TestEnvironment ["Isolated TestEnvironment (Context Manager)"]
+        TempDir["Ephemeral Directory /tmp/..."]
+        IsolatedConfig["Isolated config.env & blocked.json"]
+        PortAllocator["FreePortManager: Dynamic bind(0)"]
+        ProcCleanup["Automatic SIGTERM / SIGKILL Process Reaper"]
     end
 
-    subgraph MockHarness [Deterministic Mock Servers]
-        MITM[MockFortinetMITMServer\nCert: CN=FG6H0FTB22905105, O=Fortinet]
-        Fault[MockTCPFaultServer\nModes: SO_LINGER RST / 1.2s+ Timeout]
-        SOCKS5[MockSOCKS5Server\nRFC 1928, ATYP=0x03 Remote DNS Assertion]
-        Portal[MockCaptivePortalServer\n192.168.55.253 Login, Keepalive, Logout]
+    subgraph MockHarness ["Deterministic Mock Servers"]
+        MITM["MockFortinetMITMServer<br/>Cert: CN=FG6H0FTB22905105, O=Fortinet"]
+        Fault["MockTCPFaultServer<br/>Modes: SO_LINGER RST / 1.2s+ Timeout"]
+        SOCKS5["MockSOCKS5Server<br/>RFC 1928, ATYP=0x03 Remote DNS Assertion"]
+        Portal["MockCaptivePortalServer<br/>192.168.55.253 Login, Keepalive, Logout"]
     end
 
-    subgraph TestClients [Opaque-Box Test Clients]
-        CLIClient[CLIProcessManager\nCalls smart-tunnel subcommands]
-        ProxyClient[ProxyClientHelper\nHTTP, HTTPS CONNECT, REST API Client]
-        ExtValidator[WebExtensionValidator\nManifest V3 & DOM Element Inspector]
+    subgraph TestClients ["Opaque-Box Test Clients"]
+        CLIClient["CLIProcessManager<br/>Calls smart-tunnel subcommands"]
+        ProxyClient["ProxyClientHelper<br/>HTTP, HTTPS CONNECT, REST API Client"]
+        ExtValidator["WebExtensionValidator<br/>Manifest V3 & DOM Element Inspector"]
     end
 
-    subgraph MasterRunner [Master Test Runner]
-        Runner[run_all_e2e.py\nCLI Flags: --tier, -v, --json, -k, --fail-fast]
-        CustomResult[E2ETestResult\nANSI Green/Red/Yellow Live Streaming]
-        JSONReport[Machine-Readable JSON Report Export]
+    subgraph MasterRunner ["Master Test Runner"]
+        Runner["run_all_e2e.py<br/>CLI Flags: --tier, -v, --json, -k, --fail-fast"]
+        CustomResult["E2ETestResult<br/>ANSI Green/Red/Yellow Live Streaming"]
+        JSONReport["Machine-Readable JSON Report Export"]
     end
 
     TestEnvironment --> MockHarness

@@ -250,7 +250,7 @@ function prefetchSharedList() {
 chrome.runtime.onInstalled.addListener(() => {
   prefetchSharedList();
   chrome.storage.local.get(["proxyMode"], (data) => {
-    const mode = data.proxyMode || "direct";
+    const mode = data.proxyMode || "smart";
     ProxyManager.setMode(mode).catch(() => {});
   });
 });
@@ -259,7 +259,7 @@ if (chrome.runtime.onStartup) {
   chrome.runtime.onStartup.addListener(() => {
     prefetchSharedList();
     chrome.storage.local.get(["proxyMode"], (data) => {
-      const mode = data.proxyMode || "direct";
+      const mode = data.proxyMode || "smart";
       ProxyManager.setMode(mode).catch(() => {});
     });
   });
